@@ -2,17 +2,13 @@ import streamlit as st
 import google.generativeai as genai
 from datetime import datetime
 
-# 1. Sayfa Ayarları ve Tema
+# 1. Sayfa Ayarları
 st.set_page_config(page_title="T.C. Akıllı Sağlık Sistemi", page_icon="🏥", layout="wide")
 
-# Özel CSS ile Profesyonel Görünüm
+# Görsel Stil Ayarları
 st.markdown("""
     <style>
-    .main { background-color: #f5f7f9; }
     .stButton>button { width: 100%; border-radius: 20px; background-color: #d32f2f; color: white; height: 3em; font-weight: bold; }
-    .stTextArea>div>div>textarea { border-radius: 15px; }
-    .reportview-container .main .block-container { padding-top: 2rem; }
-    .sidebar .sidebar-content { background-image: linear-gradient(#2e7d32,#1b5e20); color: white; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -23,89 +19,50 @@ if "GOOGLE_API_KEY" in st.secrets:
 else:
     st.error("API Anahtarı bulunamadı!")
 
-# Session State (Geçmişi tutmak için)
-if 'gecmis' not in st.session_state:
-    st.session_state.gecmis = []
-
 # 3. Yan Panel (Sidebar)
 with st.sidebar:
-   with st.sidebar:
     st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
     try:
-        # Karakter sorunu olmayan, bakanlığın orijinal logo linki
+        # Sağlık Bakanlığı Logo Denemesi
         st.image("https://www.saglik.gov.tr/Assets/images/logo.png", width=150)
     except:
-        # Eğer internetten logo çekilemezse uygulama çökmesin, sadece yazı yazsın
-        st.markdown("<h1 style='text-align: center;'>🏥</h1>", unsafe_allow_html=True)
+        st.markdown("<h1>🏥</h1>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
     st.write("---")
-    st.title("Sistem Bilgileri")
-    st.info(f"Tarih: {datetime.now().strftime('%d/%m/%Y')}")
+    st.info(f"Sistem Tarihi: {datetime.now().strftime('%d/%m/%Y')}")
     st.write("---")
-    if st.button("Sohbeti Sıfırla"):
-        st.session_state.gecmis = []
-        st.rerun()
+    # Sidebar'a sabit link butonu
+    st.link_button("🔗 MHRS Giriş Ekranı", "https://mhrs.gov.tr/vatandas/#/")
 
-# 4. Ana Ekran Başlıkları
-col1, col2 = st.columns([1, 4])
-with col1:
-    st.write("") # Boşluk
-with col2:
-    st.title("🩺 Dijital Sağlık ve Yönlendirme Paneli")
-    st.caption("Yapay Zeka Destekli Ön Analiz Sistemi")
+# 4. Ana Ekran
+st.title("🩺 Akıllı Sağlık ve Yönlendirme Paneli")
+st.caption("Yapay Zeka Destekli Triyaj ve Randevu Yönlendirme")
 
-# 5. Kullanıcı Giriş Alanı
-with st.container():
-    st.write("---")
-    sikayet = st.text_area("Lütfen yaşadığınız belirtileri detaylıca anlatın:", 
-                          placeholder="Örn: 2 gündür süren şiddetli karın ağrısı, bulantı ve yüksek ateş...",
-                          height=150)
-    
-    col_btn1, col_btn2 = st.columns([1, 1])
-    with col_btn1:
-        analiz_et = st.button("🚀 Kapsamlı Analiz Yap")
+sikayet = st.text_area("Lütfen şikayetinizi detaylıca yazın:", 
+                      placeholder="Örn: 3 gündür süren baş ağrısı ve halsizlik...",
+                      height=150)
 
-# 6. Analiz Süreci ve Sonuç
-if analiz_et and sikayet:
-    try:
-        with st.spinner('Tıbbi veritabanı taranıyor ve analiz ediliyor...'):
-            # Daha profesyonel bir prompt (komut)
-            prompt = f"""
-            Sen uzman bir triyaj (hasta sınıflandırma) asistanısın. 
-            Aşağıdaki belirtileri analiz et: '{sikayet}'
-            Cevabını şu formatta ver:
-            1. OLASI BÖLÜM: (Hangi poliklinik?)
-            2. ACİLİYET: (10 üzerinden bir puan ver ve nedenini açıkla)
-            3. ÖNERİLEN ADIMLAR: (Kısa ve öz tavsiyeler)
-            4. UYARI: (Mutlaka tıbbi tavsiye olmadığını belirt)
-            """
-            response = model.generate_content(prompt)
-            sonuc = response.text
-            
-            # Geçmişe ekle
-            st.session_state.gecmis.append({"zaman": datetime.now().strftime("%H:%M"), "soru": sikayet, "cevap": sonuc})
-            
-            # Ekrana Yazdır
-            st.subheader("📋 Analiz Raporu")
-            st.success(sonuc)
-            
-            # Raporu İndirme Butonu
-            st.download_button(label="📄 Raporu İndir (.txt)", 
-                             data=sonuc, 
-                             file_name=f"saglik_raporu_{datetime.now().strftime('%Y%m%d_%H%M')}.txt",
-                             mime="text/plain")
-            
-    except Exception as e:
-        st.error(f"Bir hata oluştu: {e}")
-
-# 7. Geçmiş Bölümü (History)
-if st.session_state.gecmis:
-    st.write("---")
-    st.subheader("📜 Önceki Analizleriniz")
-    for item in reversed(st.session_state.gecmis):
-        with st.expander(f"Saat {item['zaman']} - {item['soru'][:30]}..."):
-            st.write(item['cevap'])
+if st.button("🚀 Kapsamlı Analiz Yap"):
+    if sikayet:
+        try:
+            with st.spinner('Yapay zeka analiz ediyor...'):
+                prompt = f"Sen profesyonel bir triyaj asistanısın. Kullanıcının şu şikayetini analiz et: '{sikayet}'. Hangi tıbbi bölüme gitmesi gerektiğini ve durumun ciddiyetini açıkla."
+                response = model.generate_content(prompt)
+                
+                st.subheader("📋 Analiz Raporu")
+                st.success(response.text)
+                
+                # İŞTE O EKLEME: Analizden hemen sonra randevu butonu
+                st.write("---")
+                st.markdown("### 📅 Bir Sonraki Adım")
+                st.info("Analiz sonucuna göre randevu almak için aşağıdaki MHRS butonunu kullanabilirsiniz.")
+                st.link_button("👉 MHRS'den Randevu Al", "https://mhrs.gov.tr/vatandas/#/", type="primary")
+                
+        except Exception as e:
+            st.error(f"Analiz sırasında bir sorun oluştu: {e}")
+    else:
+        st.warning("Lütfen önce bir şikayet yazın.")
 
 # Footer
 st.write("---")
-st.markdown("<p style='text-align: center; color: gray;'>Bu uygulama yapay zeka teknolojisi kullanılarak KMÜ öğrencisi tarafından geliştirilmiştir.</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; font-size: 0.8rem; color: gray;'>Bu proje Karaman KMÜ Otomotiv öğrencisi tarafından bir örnek çalışma olarak geliştirilmiştir.</p>", unsafe_allow_html=True)
