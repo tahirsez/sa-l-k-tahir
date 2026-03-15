@@ -91,29 +91,18 @@ with col_mid:
             # DİKKAT: TRY BLOĞU BURADA BAŞLIYOR
             try:
                 with st.spinner('Yapay zeka analiz ediyor...'):
-                 # ... (kodun üst kısımları aynı) ...
-            try:
-                with st.spinner('Yapay zeka detaylı tıbbi analiz yapıyor...'):
-                    # YENİ DETAYLI PROMPT
-                    prompt = f"""
-                    Sen profesyonel bir hastane triyaj (ön değerlendirme) uzmanısın. 
-                    Kullanıcının şikayeti: '{sikayet}'
-                    
-                    Lütfen şu başlıklarla detaylı bir analiz sun:
-                    1. 🔍 **Şikayet Analizi:** Belirtiler neye işaret ediyor olabilir?
-                    2. 🏥 **Poliklinik Önerisi:** Hangi bölüme randevu alınmalı?
-                    3. ⚡ **Aciliyet Durumu:** Durum ne kadar ciddi? (Düşük/Orta/Yüksek)
-                    4. 💡 **Tavsiyeler:** Doktora gidene kadar nelere dikkat edilmeli?
-                    5. ⚠️ **Kritik Uyarı:** Hangi belirtiler artarsa acilen 112 aranmalı?
-                    
-                    Cevabını profesyonel, güven verici ve anlaşılır bir Türkçe ile ver.
-                    """
-                    response = model.generate_content(prompt)
+              # 94. SATIRDAN İTİBAREN BUNU YAPIŞTIR:
+                prompt = f"""
+                Sen profesyonel bir hastane triyaj (ön değerlendirme) uzmanısın. 
+                Kullanıcının şikayeti: '{sikayet}'
                 
-                st.markdown("---")
-                st.subheader("📋 Kapsamlı Değerlendirme Raporu")
-                st.write(response.text) # st.info yerine st.write kullanarak daha geniş alan kazandık
+                Lütfen şu başlıklarla DETAYLI bir analiz sun:
+                1. 🔍 **Şikayet Analizi:** Belirtiler neye işaret ediyor olabilir?
+                2. 🏥 **Poliklinik Önerisi:** Hangi bölüme randevu alınmalı?
+                3. ⚡ **Aciliyet Durumu:** Durum ne kadar ciddi? (Düşük/Orta/Yüksek)
+                4. 💡 **Tavsiyeler:** Doktora gidene kadar nelere dikkat edilmeli?
+                5. ⚠️ **Kritik Uyarı:** Hangi belirtiler artarsa acilen 112 aranmalı?
                 
-                st.markdown("---")
-                st.link_button("👉 MHRS'den Hemen Randevu Al", "https://mhrs.gov.tr/vatandas/#/")
-# ... (kodun alt kısımları aynı) ...
+                Cevabını profesyonel, güven verici ve detaylı bir Türkçe ile ver.
+                """
+                response = model.generate_content(prompt)
