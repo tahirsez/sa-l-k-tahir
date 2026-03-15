@@ -29,9 +29,16 @@ if 'gecmis' not in st.session_state:
 
 # 3. Yan Panel (Sidebar)
 with st.sidebar:
-    st.image("https://raw.githubusercontent.com/tahirsez/sa-l-k-asistan-/main/logo.png", width=100, on_error="continue")
-# Eğer yukarıdaki de naz yaparsa, şu genel sağlık ikonunu kullanabilirsin:
-# st.markdown("<h1 style='text-align: center;'>🏥</h1>", unsafe_allow_html=True)
+   with st.sidebar:
+    st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
+    try:
+        # Karakter sorunu olmayan, bakanlığın orijinal logo linki
+        st.image("https://www.saglik.gov.tr/Assets/images/logo.png", width=150)
+    except:
+        # Eğer internetten logo çekilemezse uygulama çökmesin, sadece yazı yazsın
+        st.markdown("<h1 style='text-align: center;'>🏥</h1>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+    st.write("---")
     st.title("Sistem Bilgileri")
     st.info(f"Tarih: {datetime.now().strftime('%d/%m/%Y')}")
     st.write("---")
