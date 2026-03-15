@@ -2,128 +2,126 @@ import streamlit as st
 import google.generativeai as genai
 from datetime import datetime
 
-# 1. Sayfa Ayarları
-st.set_page_config(page_title="MHRS Dijital Asistan", page_icon="🏥", layout="wide")
+# 1. Sayfa Konfigürasyonu
+st.set_page_config(page_title="Akıllı Sağlık Paneli", page_icon="🩺", layout="wide")
 
-# MHRS "Beyaz Tema" ve Profesyonel CSS
+# PROFESYONEL CSS (Sağ tarafı ve yazıları düzelten bölüm)
 st.markdown("""
     <style>
-    /* Ana Arka Planı Bembeyaz Yap */
-    .stApp {
-        background-color: #ffffff;
-    }
+    /* Bembeyaz Arka Plan Zorlaması */
+    .stApp { background-color: #ffffff; }
     
-    /* Sağ Tarafın İçeriğini Beyaz Tut */
-    [data-testid="stVerticalBlock"] {
-        background-color: #ffffff;
+    /* Üst Panel Tasarımı */
+    .header-bar {
+        background-color: #e30613;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 15px rgba(227, 6, 19, 0.2);
+    }
+    .header-text {
+        color: white !important;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        font-weight: 700;
+        letter-spacing: 2px;
+        margin: 0;
+        font-size: 24px;
     }
 
-    /* MHRS Kırmızısı ve Fontlar */
-    h1, h2, h3 {
+    /* Yazı Alanı ve Fontlar */
+    .stTextArea label {
         color: #e30613 !important;
-        font-family: 'Segoe UI', sans-serif;
-    }
-
-    /* Giriş Kutusu (Text Area) Tasarımı */
-    .stTextArea textarea {
-        background-color: #fcfcfc !important;
-        border: 2px solid #ddd !important;
-        border-radius: 10px !important;
-        color: #333 !important;
+        font-weight: bold !important;
+        font-size: 1.2rem !important;
     }
     
-    .stTextArea textarea:focus {
-        border-color: #e30613 !important;
-    }
-
-    /* Buton Tasarımı (MHRS Kırmızısı) */
+    /* Buton Tasarımı (Hover Efektli) */
     .stButton>button {
         background-color: #e30613 !important;
         color: white !important;
-        border-radius: 5px !important;
         border: none !important;
         height: 3.5rem !important;
-        font-size: 1.1rem !important;
-        font-weight: bold !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+        width: 100% !important;
+        font-weight: 800 !important;
+        border-radius: 8px !important;
+        transition: all 0.3s ease;
+    }
+    .stButton>button:hover {
+        background-color: #2d2d2d !important;
+        transform: scale(1.02);
     }
 
-    /* Yan Panel (Sidebar) MHRS Tarzı */
+    /* Yan Panel Estetiği */
     [data-testid="stSidebar"] {
-        background-color: #f1f3f5 !important;
-        border-right: 4px solid #e30613 !important;
-    }
-
-    /* Bilgi Kutularını (Success/Info) MHRS'ye Uyarlat */
-    .stAlert {
-        background-color: #ffffff !important;
-        border: 1px solid #e30613 !important;
-        color: #333 !important;
-        border-radius: 10px !important;
+        background-color: #f8f9fa !important;
+        border-right: 5px solid #e30613 !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# 2. API ve Model (Senin 2.5-flash)
+# 2. API ve Model (Senin canavar 2.5-flash)
 if "GOOGLE_API_KEY" in st.secrets:
     genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
     model = genai.GenerativeModel('gemini-2.5-flash')
 else:
     st.error("API Anahtarı bulunamadı!")
 
-# 3. Yan Panel (Sidebar)
+# 3. YAN PANEL (Sidebar)
 with st.sidebar:
-    st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align: center; padding: 20px;'>", unsafe_allow_html=True)
     try:
-        st.image("logo.png", width=170)
+        st.image("logo.png", width=160)
     except:
-        st.markdown("<h1 style='color:#e30613; font-size: 60px;'>🏥</h1>", unsafe_allow_html=True)
-    st.markdown("<h4 style='color:#555;'>Dijital Sağlık Paneli</h4>", unsafe_allow_html=True)
+        st.markdown("<h1 style='color:#e30613; font-size: 80px;'>🩺</h1>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #2d2d2d;'>DİJİTAL SAĞLIK<br>ASİSTANI</h3>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
     
     st.write("---")
-    st.markdown("### 📋 Menü")
-    st.link_button("🏥 MHRS Randevu Sistemi", "https://mhrs.gov.tr/vatandas/#/")
+    st.markdown("#### 🛠️ HIZLI İŞLEMLER")
+    st.link_button("🏥 Randevu Sistemi", "https://mhrs.gov.tr/vatandas/#/")
     st.link_button("📑 E-Nabız Portalı", "https://enabiz.gov.tr/")
     
     st.write("---")
-    st.caption(f"Sistem Tarihi: {datetime.now().strftime('%d.%m.%Y')}")
-    st.caption("Konum: KMÜ Karaman")
+    st.caption(f"🗓️ Tarih: {datetime.now().strftime('%d.%m.%Y')}")
+    st.caption("📍 KMÜ / Karaman Yerleşkesi")
 
-# 4. Ana Ekran - MHRS Üst Barı Taklidi
+# 4. ANA EKRAN (Üst Panel ve Giriş)
 st.markdown("""
-    <div style='background-color: #e30613; padding: 10px; border-radius: 5px; margin-bottom: 25px;'>
-        <h3 style='color: white !important; margin: 0; text-align: center;'>T.C. SAĞLIK BAKANLIĞI AKILLI YÖNLENDİRME SİSTEMİ</h3>
+    <div class='header-bar'>
+        <p class='header-text'>AKILLI SAĞLIK VE ANALİZ SİSTEMİ</p>
     </div>
     """, unsafe_allow_html=True)
 
-# Şikayet Giriş Alanı
-with st.container():
-    st.markdown("### 🏥 Şikayet Bilgi Girişi")
-    st.write("Lütfen mevcut rahatsızlığınızı aşağıdaki alana detaylıca tanımlayınız.")
+# İçerik Alanı
+col1, col2, col3 = st.columns([1, 6, 1]) # Ortalamak için kolon kullanıyoruz
+
+with col2:
+    st.markdown("### 📋 Şikayet Giriş Formu")
+    st.write("Lütfen yaşadığınız belirtileri aşağıya detaylıca yazınız.")
     
-    sikayet = st.text_area("", placeholder="Örn: Mide yanması, bulantı ve sabahları görülen halsizlik...", height=150)
+    sikayet = st.text_area("Belirtileriniz:", placeholder="Örn: 2 gündür süren eklem ağrısı ve halsizlik...", height=180, label_visibility="collapsed")
+    
+    st.write("") # Boşluk
     
     if st.button("SİSTEM ANALİZİNİ BAŞLAT"):
         if sikayet:
             try:
-                with st.spinner('Yapay zeka tıbbi algoritmaları çalıştırıyor...'):
-                    prompt = f"Sen bir triyaj asistanısın. Şu şikayeti profesyonel ve kısa bir rapor haline getir: '{sikayet}'. Hangi poliklinik ve randevu türü seçilmeli?"
+                with st.spinner('Yapay zeka verileri tarıyor...'):
+                    prompt = f"Sen bir sağlık triyaj asistanısın. Şu şikayeti profesyonel ve kısa bir rapor haline getir: '{sikayet}'. Hangi poliklinik seçilmeli?"
                     response = model.generate_content(prompt)
                 
-                st.markdown("### 📋 Analiz ve Poliklinik Önerisi")
+                st.markdown("---")
+                st.markdown("#### 🩺 Yapay Zeka Ön Değerlendirmesi")
                 st.success(response.text)
                 
-                # MHRS Butonu
-                st.markdown("---")
-                st.info("💡 **Bilgilendirme:** Analiz sonucuna göre randevunuzu MHRS üzerinden hemen alabilirsiniz.")
-                st.link_button("👉 MHRS'DEN RANDEVU ALMAK İÇİN TIKLAYIN", "https://mhrs.gov.tr/vatandas/#/")
-                
+                # Alt Yönlendirme
+                st.info("💡 **Bilgi:** Analiz sonucuna göre randevunuzu yukarıdaki sistem üzerinden alabilirsiniz.")
             except Exception as e:
-                st.error(f"Bir sorun oluştu, lütfen tekrar deneyin: {e}")
+                st.error(f"Bir sorun oluştu: {e}")
         else:
-            st.warning("Lütfen analiz için bir şikayet yazınız.")
+            st.warning("Analiz için lütfen bir şikayet metni giriniz.")
 
 # Footer
 st.markdown("---")
-st.markdown("<p style='text-align: center; color: #999; font-size: 0.8rem;'>Bu portal Karaman KMÜ öğrencisi tarafından geliştirilmiş akademik bir çalışmadır. © 2026</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #999; font-size: 0.9rem;'>Bu portal Karaman KMÜ öğrencisi Tahir Sezen tarafından geliştirilmiştir. © 2026</p>", unsafe_allow_html=True)
