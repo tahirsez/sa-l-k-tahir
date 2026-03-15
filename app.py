@@ -3,12 +3,45 @@ import google.generativeai as genai
 from datetime import datetime
 
 # 1. Sayfa Ayarları
-st.set_page_config(page_title="T.C. Akıllı Sağlık Sistemi", page_icon="🏥", layout="wide")
+st.set_page_config(page_title="MHRS Destekli Sağlık Asistanı", page_icon="🏥", layout="wide")
 
-# Görsel Stil Ayarları
+# MHRS Kurumsal Renkleri ve CSS Teması
 st.markdown("""
     <style>
-    .stButton>button { width: 100%; border-radius: 20px; background-color: #d32f2f; color: white; height: 3em; font-weight: bold; }
+    /* MHRS Kırmızısı ve Genel Tema */
+    :root {
+        --mhrs-red: #e30613;
+        --mhrs-dark: #2d2d2d;
+    }
+    .main { background-color: #fcfcfc; }
+    
+    /* Buton Tasarımı */
+    .stButton>button { 
+        width: 100%; 
+        border-radius: 5px; 
+        background-color: #e30613; 
+        color: white; 
+        height: 3.5em; 
+        font-weight: bold;
+        border: none;
+        transition: 0.3s;
+    }
+    .stButton>button:hover {
+        background-color: #b3050f;
+        border: none;
+    }
+    
+    /* Yan Panel (Sidebar) MHRS Teması */
+    [data-testid="stSidebar"] {
+        background-color: #f4f4f4;
+        border-right: 2px solid #e30613;
+    }
+    
+    /* Başlık ve Yazı Stilleri */
+    h1 { color: #e30613; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    
+    /* Bilgi Kutucukları */
+    .stAlert { border-radius: 10px; border-left: 5px solid #e30613; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -19,50 +52,41 @@ if "GOOGLE_API_KEY" in st.secrets:
 else:
     st.error("API Anahtarı bulunamadı!")
 
-# 3. Yan Panel (Sidebar)
+# 3. Yan Panel (Sidebar) - MHRS Logosu ve Menü
 with st.sidebar:
     st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
-    try:
-        # Sağlık Bakanlığı Logo Denemesi
-        st.image("https://www.saglik.gov.tr/Assets/images/logo.png", width=150)
-    except:
-        st.markdown("<h1>🏥</h1>", unsafe_allow_html=True)
+    # MHRS Logosu (Resmi MHRS sitesinden çekiliyor)
+    st.image("https://mhrs.gov.tr/vatandas/assets/images/mhrs-logo.png", width=180)
     st.markdown("</div>", unsafe_allow_html=True)
+    
     st.write("---")
-    st.info(f"Sistem Tarihi: {datetime.now().strftime('%d/%m/%Y')}")
+    st.markdown("### 🏥 Sistem Durumu")
+    st.info(f"Tarih: {datetime.now().strftime('%d/%m/%Y')}\n\nKonum: Karaman")
+    
     st.write("---")
-    # Sidebar'a sabit link butonu
-    st.link_button("🔗 MHRS Giriş Ekranı", "https://mhrs.gov.tr/vatandas/#/")
+    st.markdown("### 🔗 Hızlı Erişim")
+    st.link_button("MHRS Randevu Al", "https://mhrs.gov.tr/vatandas/#/")
+    st.link_button("E-Nabız Giriş", "https://enabiz.gov.tr/")
 
-# 4. Ana Ekran
-st.title("🩺 Akıllı Sağlık ve Yönlendirme Paneli")
-st.caption("Yapay Zeka Destekli Triyaj ve Randevu Yönlendirme")
+# 4. Ana Ekran İçeriği
+st.markdown("# 🩺 Akıllı Sağlık Danışma ve Yönlendirme")
+st.write("Şikayetinizi yazın, yapay zeka sizi en uygun polikliniğe yönlendirsin.")
 
-sikayet = st.text_area("Lütfen şikayetinizi detaylıca yazın:", 
-                      placeholder="Örn: 3 gündür süren baş ağrısı ve halsizlik...",
-                      height=150)
+with st.container():
+    sikayet = st.text_area("Belirtilerinizi buraya yazınız:", 
+                          placeholder="Örn: Mide yanması ve halsizlik şikayetim var...",
+                          height=150)
+    
+    col1, col2 = st.columns([2, 1])
+    with col1:
+        analiz_butonu = st.button("🚀 ANALİZ ET VE YÖNLENDİR")
 
-if st.button("🚀 Kapsamlı Analiz Yap"):
-    if sikayet:
-        try:
-            with st.spinner('Yapay zeka analiz ediyor...'):
-                prompt = f"Sen profesyonel bir triyaj asistanısın. Kullanıcının şu şikayetini analiz et: '{sikayet}'. Hangi tıbbi bölüme gitmesi gerektiğini ve durumun ciddiyetini açıkla."
-                response = model.generate_content(prompt)
-                
-                st.subheader("📋 Analiz Raporu")
-                st.success(response.text)
-                
-                # İŞTE O EKLEME: Analizden hemen sonra randevu butonu
-                st.write("---")
-                st.markdown("### 📅 Bir Sonraki Adım")
-                st.info("Analiz sonucuna göre randevu almak için aşağıdaki MHRS butonunu kullanabilirsiniz.")
-                st.link_button("👉 MHRS'den Randevu Al", "https://mhrs.gov.tr/vatandas/#/", type="primary")
-                
-        except Exception as e:
-            st.error(f"Analiz sırasında bir sorun oluştu: {e}")
-    else:
-        st.warning("Lütfen önce bir şikayet yazın.")
-
-# Footer
-st.write("---")
-st.markdown("<p style='text-align: center; font-size: 0.8rem; color: gray;'>Bu proje Karaman KMÜ Otomotiv öğrencisi tarafından bir örnek çalışma olarak geliştirilmiştir.</p>", unsafe_allow_html=True)
+# 5. Analiz ve Sonuç Ekranı
+if analiz_butonu and sikayet:
+    try:
+        with st.spinner('MHRS Protokollerine göre analiz ediliyor...'):
+            prompt = f"Sen bir sağlık triyaj asistanısın. Şikayet: '{sikayet}'. Hangi polikliniğe gidilmeli ve aciliyet durumu nedir? MHRS formatında kısa bir rapor sun."
+            response = model.generate_content(prompt)
+            
+            st.markdown("---")
+            st.subheader
