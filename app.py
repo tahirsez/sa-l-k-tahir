@@ -91,21 +91,29 @@ with col_mid:
             # DİKKAT: TRY BLOĞU BURADA BAŞLIYOR
             try:
                 with st.spinner('Yapay zeka analiz ediyor...'):
-                    prompt = f"Sen bir triyaj asistanısın. Şikayet: '{sikayet}'. Hangi poliklinik? Kısa cevapla."
+                 # ... (kodun üst kısımları aynı) ...
+            try:
+                with st.spinner('Yapay zeka detaylı tıbbi analiz yapıyor...'):
+                    # YENİ DETAYLI PROMPT
+                    prompt = f"""
+                    Sen profesyonel bir hastane triyaj (ön değerlendirme) uzmanısın. 
+                    Kullanıcının şikayeti: '{sikayet}'
+                    
+                    Lütfen şu başlıklarla detaylı bir analiz sun:
+                    1. 🔍 **Şikayet Analizi:** Belirtiler neye işaret ediyor olabilir?
+                    2. 🏥 **Poliklinik Önerisi:** Hangi bölüme randevu alınmalı?
+                    3. ⚡ **Aciliyet Durumu:** Durum ne kadar ciddi? (Düşük/Orta/Yüksek)
+                    4. 💡 **Tavsiyeler:** Doktora gidene kadar nelere dikkat edilmeli?
+                    5. ⚠️ **Kritik Uyarı:** Hangi belirtiler artarsa acilen 112 aranmalı?
+                    
+                    Cevabını profesyonel, güven verici ve anlaşılır bir Türkçe ile ver.
+                    """
                     response = model.generate_content(prompt)
                 
-                # Sonuç Alanı
                 st.markdown("---")
-                st.markdown("#### 🩺 Analiz Sonucu")
-                st.info(response.text)
-                st.link_button("👉 MHRS'den Randevu Al", "https://mhrs.gov.tr/vatandas/#/")
-            
-            # DİKKAT: EXCEPT BLOĞU BURADA (Hata alan yer burasıydı)
-            except Exception as e:
-                st.error(f"Sistemde bir hata oluştu: {e}")
-        else:
-            st.warning("Lütfen analiz için bir şikayet metni giriniz.")
-    st.markdown("</div>", unsafe_allow_html=True)
-
-# Footer
-st.markdown("<p style='text-align: center; color: #6c757d; margin-top: 30px;'>Bu uygulama KMÜ Otomotiv Teknolojisi öğrencisi Tahir Sezen tarafından geliştirilmiştir. © 2026</p>", unsafe_allow_html=True)
+                st.subheader("📋 Kapsamlı Değerlendirme Raporu")
+                st.write(response.text) # st.info yerine st.write kullanarak daha geniş alan kazandık
+                
+                st.markdown("---")
+                st.link_button("👉 MHRS'den Hemen Randevu Al", "https://mhrs.gov.tr/vatandas/#/")
+# ... (kodun alt kısımları aynı) ...
