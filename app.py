@@ -29,7 +29,9 @@ if 'gecmis' not in st.session_state:
 
 # 3. Yan Panel (Sidebar)
 with st.sidebar:
-    st.image("https://upload.wikimedia.org/wikipedia/tr/b/b2/T.C._Sa%C4%9Fl%C4%B1k_Bakanl%C4%B1%C4%9Fe_Logo.png", width=100)
+    st.image("https://raw.githubusercontent.com/tahirsez/sa-l-k-asistan-/main/logo.png", width=100, on_error="continue")
+# Eğer yukarıdaki de naz yaparsa, şu genel sağlık ikonunu kullanabilirsin:
+# st.markdown("<h1 style='text-align: center;'>🏥</h1>", unsafe_allow_html=True)
     st.title("Sistem Bilgileri")
     st.info(f"Tarih: {datetime.now().strftime('%d/%m/%Y')}")
     st.write("---")
