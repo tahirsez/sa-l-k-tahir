@@ -88,21 +88,29 @@ with col_mid:
     st.write("") 
     if st.button("SİSTEM ANALİZİNİ BAŞLAT"):
         if sikayet:
-            # DİKKAT: TRY BLOĞU BURADA BAŞLIYOR
             try:
-                with st.spinner('Yapay zeka analiz ediyor...'):
-              # 94. SATIRDAN İTİBAREN BUNU YAPIŞTIR:
-                prompt = f"""
-                Sen profesyonel bir hastane triyaj (ön değerlendirme) uzmanısın. 
-                Kullanıcının şikayeti: '{sikayet}'
+                with st.spinner('Yapay zeka detaylı analiz yapıyor...'):
+                    # Turbo Modu: Detaylı Prompt
+                    prompt = f"""
+                    Sen profesyonel bir hastane triyaj uzmanısın. 
+                    Şikayet: '{sikayet}'
+                    Lütfen şu başlıklarla DETAYLI bir analiz sun:
+                    1. 🔍 **Şikayet Analizi:** Belirtiler neyi gösteriyor?
+                    2. 🏥 **Poliklinik Önerisi:** Hangi bölüme gidilmeli?
+                    3. ⚡ **Aciliyet Durumu:** Durumun ciddiyeti nedir?
+                    4. 💡 **Tavsiyeler:** Doktora gidene kadar ne yapılmalı?
+                    5. ⚠️ **Kritik Uyarı:** Ne zaman hemen 112 aranmalı?
+                    """
+                    response = model.generate_content(prompt)
                 
-                Lütfen şu başlıklarla DETAYLI bir analiz sun:
-                1. 🔍 **Şikayet Analizi:** Belirtiler neye işaret ediyor olabilir?
-                2. 🏥 **Poliklinik Önerisi:** Hangi bölüme randevu alınmalı?
-                3. ⚡ **Aciliyet Durumu:** Durum ne kadar ciddi? (Düşük/Orta/Yüksek)
-                4. 💡 **Tavsiyeler:** Doktora gidene kadar nelere dikkat edilmeli?
-                5. ⚠️ **Kritik Uyarı:** Hangi belirtiler artarsa acilen 112 aranmalı?
+                # SONUÇLARI EKRANA BAS (with bloğundan çıktık, try içindeyiz)
+                st.markdown("---")
+                st.markdown("#### 🩺 Yapay Zeka Ön Değerlendirmesi")
+                st.success(response.text)
+                st.link_button("👉 MHRS'den Randevu Al", "https://mhrs.gov.tr/vatandas/#/")
                 
-                Cevabını profesyonel, güven verici ve detaylı bir Türkçe ile ver.
-                """
-                response = model.generate_content(prompt)
+            except Exception as e:
+                # Hata sigortası burada (SyntaxError'u bu çözer)
+                st.error(f"Sistemde bir hata oluştu: {e}")
+        else:
+            st.warning("Lütfen analiz için bir şikayet metni giriniz.")
