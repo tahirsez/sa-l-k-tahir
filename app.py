@@ -1,43 +1,47 @@
 import streamlit as st
 import google.generativeai as genai
 
-st.set_page_config(page_title="Sağlık Asistanı - Tanı Modu", page_icon="🩺")
+# 1. Sayfa Ayarları
+st.set_page_config(page_title="T.C. Akıllı Sağlık Asistanı", page_icon="🩺", layout="centered")
 
-# 1. API Bağlantısı
-if "GOOGLE_API_KEY" in st.secrets:
-    genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
-else:
-    st.error("Secrets kutusunda GOOGLE_API_KEY bulunamadı!")
-
-st.title("🩺 Akıllı Sağlık Asistanı")
-
-# 2. Mevcut Modelleri Listeleme (Arıza Tespit)
+# 2. API ve Model Bağlantısı
 try:
-    available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-    st.info(f"Senin anahtarınla kullanılabilecek modeller: {available_models}")
-    
-    # Listeden en güncel görüneni seçelim (genellikle listenin sonundaki veya flash olanı)
-    # Eğer liste boş değilse ilkini varsayılan yapalım
-    if available_models:
-        # models/gemini-1.5-flash gibi bir isim gelecek, biz onu kullanacağız
-        secili_model_adi = available_models[0] 
-        model = genai.GenerativeModel(model_name=secili_model_adi)
-        st.success(f"Şu an aktif olan model: {secili_model_adi}")
+    if "GOOGLE_API_KEY" in st.secrets:
+        genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+        # Senin anahtarınla çalışan en güncel model:
+        model = genai.GenerativeModel('gemini-2.5-flash')
     else:
-        st.error("Kullanılabilir model bulunamadı!")
+        st.error("Hata: API anahtarı sisteme tanımlanmamış!")
 except Exception as e:
-    st.error(f"Model listesi alınamadı: {e}")
+    st.error(f"Sistem bağlantı hatası: {e}")
 
-# 3. Şikayet Analiz Kısmı
-sikayet = st.text_area("Şikayetiniz:", placeholder="Örn: Başım çok ağrıyor...")
+# 3. Görsel Tasarım (Sidebar)
+with st.sidebar:
+    st.markdown("<h1 style='text-align: center; color: #d32f2f;'>TR</h1>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center;'>T.C. Sağlık Teknolojileri</h3>", unsafe_allow_html=True)
+    st.write("---")
+    st.warning("ÖNEMLİ: Bu sistem sadece ön bilgilendirme amaçlıdır. Acil durumlarda 112'yi arayınız.")
+
+# 4. Ana Ekran
+st.title("🩺 Akıllı Sağlık Yönlendirme Asistanı")
+st.info("Lütfen şikayetinizi aşağıya detaylıca yazınız.")
+
+sikayet = st.text_area("Şikayetiniz:", placeholder="Örn: Midemde yanma var ve başım dönüyor...")
 
 if st.button("Analiz Et"):
-    if sikayet and available_models:
+    if sikayet:
         try:
-            with st.spinner('Yapay zeka analiz ediyor...'):
-                response = model.generate_content(f"Bir sağlık asistanı olarak şu şikayeti değerlendir ve poliklinik öner: {sikayet}")
+            with st.spinner('Yapay zeka analiz ediyor, lütfen bekleyin...'):
+                prompt = f"Sen profesyonel bir sağlık asistanısın. Kullanıcının şu şikayetini analiz et: '{sikayet}'. Hangi polikliniğe gitmesi gerektiğini kısa ve net bir şekilde öner."
+                response = model.generate_content(prompt)
+                
+                st.markdown("---")
+                st.subheader("Asistanın Önerisi:")
                 st.success(response.text)
         except Exception as e:
-            st.error(f"Üretim hatası: {e}")
+            st.error("Analiz sırasında bir hata oluştu. Lütfen tekrar deneyin.")
     else:
-        st.warning("Lütfen şikayet yazın veya modelin yüklendiğinden emin olun.")
+        st.warning("Lütfen önce bir şikayet yazın.")
+
+st.markdown("---")
+st.markdown("<p style='text-align: center; font-size: 0.8rem; color: gray;'>Bu proje KMÜ Otomotiv Teknolojisi öğrencisi tarafından geliştirilmiştir.</p>", unsafe_allow_html=True)
